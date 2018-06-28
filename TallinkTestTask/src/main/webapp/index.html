@@ -1,0 +1,61 @@
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-2.2.4.js"  integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="  
+		crossorigin="anonymous"></script>
+		<link rel="stylesheet" href="http://jonmiles.github.io/bootstrap-treeview/bower_components/bootstrap/dist/css/bootstrap.css">
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-treeview/1.2.0/bootstrap-treeview.min.js" crossorigin="anonymous"></script>
+		<script src="/employee.js" ></script>		
+		
+	</head>
+	
+	<body>
+		<div id="successMessage" style="display:none; color:green;"></div>
+		<div id="errorMessage" style="display:none; color:red"></div>
+		
+		Please, choose the mode		
+		<br>
+		<input name="mode" type="radio" value="displayMode" id="displayMode" checked="checked">
+		<label for = "displayMode">Just display employees</label>
+		<br>		
+		<input name="mode" type="radio" value="addMode" id="addMode">
+		<label for = "addMode">Add new employee</label>
+		<br>		
+		<input name="mode" type="radio" value="deleteMode" id="deleteMode">
+		<label for = "deleteMode">Delete employee</label>
+		
+		<div>
+			<div id = "addModeContols" style="display:none;">
+				1. Select employee who you want to add another one.
+				You can search and than select employee or select one right away
+				<br>
+				<input id="searchValue" style="margin:10px"/>
+				<button id="searchButton">Search</button>
+				<br>
+				2. Enter data First name and second names for employee
+				<br>
+				<input id="fisrtName" style="margin:10px" maxlength="30"/>
+				<input id="secondName" style="margin:10px" maxlength="30"/>
+				<button id="addButton">Add</button>
+				
+			</div>
+			
+			<div id = "deleteModeControls" style="display:none;">
+				1. Find employee who you want to delete
+				You can search and than select employee or select one right away
+				<br>
+				<input id="searchValue"/>
+				<button id="searchButton" style="margin:10px">Search</button>					
+				<button id="deleteButton">Delete employee</button>			
+			</div>	
+			<button id = "expandAll">Expand all</button>
+			<button id = "collapseAll">Collapse all</button>
+		</div>		
+		
+		<div id="employeeTree" style = "margin: 10px"></div>		
+		<script>
+			addDynamic();
+			initTree();
+		</script>
+	</body>
+</html>
