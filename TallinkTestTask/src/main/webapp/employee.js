@@ -1,4 +1,6 @@
 var employeeServiceLink = "http://localhost:8088/employees";
+var regexFirstName = /^[a-zA-Z]{3,30}$/i;
+var regexSecondName = /^[a-zA-Z]{3,30}$/i;
 
 function addDynamic() {
 	$(function() {
@@ -43,6 +45,7 @@ function getDataToDeleteEmployee() {
 
 // add employee
 function handleAddEmployee() {
+	clearSuccessErrorMessages();
 	if (isValidAddEmployee()) {
 		madeAddEmployeeRequest();
 	}
@@ -50,6 +53,7 @@ function handleAddEmployee() {
 }
 
 function handleDeleteEmployee() {
+	clearSuccessErrorMessages();
 	if (isValidDeleteEmployee()) {	
 		madeDeleteEmployeeRequest();
 	}
@@ -64,20 +68,22 @@ function isValidAddEmployee() {
 		
 	}
 	var firstName = $('#fisrtName').val();
-	if (firstName.length < 3 || firstName.length > 30) {
-		if (errorText == "") {
-			errorText = "The length of first name has to be more than 3 and less then 30."
+	if (!isCorrectFirstName(firstName)) {
+		var firstNameValidationText = "The length of first name has to be more than 3 and less then 30. And you have to use only latin letters";
+		if (errorText == "") {			
+			errorText = errorText + firstNameValidationText;
 		} else {
-			errorText =  errorText + "<br>The length of first name has to be more than 3 and less then 30"
+			errorText =  errorText + "<br>" + firstNameValidationText;
 		}
 	}		
 		
 	var secondName = $('#secondName').val();
-	if (secondName.length < 3 || secondName.length > 30) {
+	if (!isCorrectSecondName(secondName)) {
+		var firstNameValidationText = "The length of second name has to be more than 3 and less then 30. And you have to use only latin letters";
 		if (errorText == "") {
-			errorText = "The length of second name has to be more than 3 and less then 30."
+			errorText = firstNameValidationText;
 		} else {
-			errorText =  errorText + "<br>The length of second name has to be more than 3 and less then 30"
+			errorText =  errorText + "<br>" + firstNameValidationText;
 		}
 	}
 	
@@ -99,8 +105,7 @@ function isValidDeleteEmployee() {
 	return true;
 }
 
-function madeAddEmployeeRequest() {
-	clearSuccessErrorMessages();
+function madeAddEmployeeRequest() {	
 	$.ajax({
 		  method: "POST",
 		  url: employeeServiceLink,
@@ -114,8 +119,7 @@ function madeAddEmployeeRequest() {
 }
 
 // delete employee
-function madeDeleteEmployeeRequest() {
-	clearSuccessErrorMessages();
+function madeDeleteEmployeeRequest() {	
 	$.ajax({
 		  method: "DELETE",
 		  url: employeeServiceLink + "?" + getDataToDeleteEmployee()
@@ -215,4 +219,14 @@ function handleSearchDeleteMode() {
 		  revealResults: true,  // reveal matching nodes
 		}]);
 }
+
+function isCorrectFirstName(firstName) {
+	return regexFirstName.test(firstName);
+}
+
+function isCorrectSecondName(secondName) {
+	return regexSecondName.test(secondName);
+}
+
+
 			
