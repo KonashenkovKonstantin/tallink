@@ -1,350 +1,207 @@
 package com.tallink.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.eclipse.jetty.http.HttpMethod;
 import org.junit.Test;
 
 public class EmployeeServletTest {
 	
 	private static final String URL_GET_ALL_EMPLOYEE = "http://localhost:8088/employees";
-	private static final String URL_ADD_EMPLOYEE = "http://localhost:8088/employees?managerId=%s&firstName=%s&secondName=%s";
-	private static final String URL_DELETE_EMPLOYEE = "http://localhost:8088/employees?employeeId=%s";
+	private static final String URL_ADD_EMPLOYEE = "http://localhost:8088/employees";
+	private static final String URL_DELETE_EMPLOYEE = "http://localhost:8088/employees";
+
 	
-
 	@Test
-	public void getAllEmployeePositiveTest() {
-
-		try {
-			String testUrl = URL_GET_ALL_EMPLOYEE;			
-			URL serveltUrl = new URL(testUrl);
-			HttpURLConnection con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("GET");			
-			int responseCode = con.getResponseCode();			
-			assertEquals(200, responseCode);
-		} catch(Exception ee) {						
-			fail();
-		}
+	public void getAllEmployeePositiveTest() throws IOException {
+		String testUrl = URL_GET_ALL_EMPLOYEE;
+		assertEquals(200, makeGetRequest(testUrl, null).getResponseCode());		
 	}
 	
 	@Test
-	public void addEmployeePositiveTest() {
-
-		try {
-			String managerId = "3";
-			String firstName = "TestFirstName";
-			String secondName = "TestSecondName";			
-			
-			String testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			URL serveltUrl = new URL(testUrl);
-			HttpURLConnection con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-
-			
-			int responseCode = con.getResponseCode();			
-			assertEquals(200, responseCode);
-		} catch(Exception ee) {						
-			fail();
-		}
+	public void addEmployeePositiveTest() throws IOException {
+		Map<String, String> parameters = new HashMap<String, String>(3);
+		parameters.put("managerId", "1");
+		parameters.put("firstName", "TestFirstName");
+		parameters.put("secondName", "TestSecondName");		
+		assertEquals(200, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());
 	}
 
 	@Test
-	public void addEmployeeNegativeTest() {
+	public void addEmployeeNegativeTest() throws IOException {		
+		//1. manager id is empty
+		Map<String, String> parameters = new HashMap<String, String>(3);
+		parameters.put("managerId", "");
+		parameters.put("firstName", "TestFirstName");
+		parameters.put("secondName", "TestSecondName");
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());
 
-		try {
 			
-			//1. manager id is empty
-			String managerId = "";
-			String firstName = "TestFirstName";
-			String secondName = "TestSecondName";
-			String testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			URL serveltUrl = new URL(testUrl);
-			HttpURLConnection con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			int responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-			//2. manager id is negative 
-			managerId = "-1";			
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
+		//2. manager id is negative 
+		parameters.put("managerId", "-1");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());
+	
 
-			//3. manager id is not a number 
-			managerId = "eq";			
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
+		//3. manager id is not a number 
+		parameters.put("managerId", "eq");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());		
+		
+		//4. manager id is not a integer
+		parameters.put("managerId", "20.6");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());
 			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);			
+		//5. manager id is too small
+		parameters.put("managerId", "-922337203685477580700");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());
 			
-			//4. manager id is not a integer 
-			managerId = "20.6";			
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
+		//6. manager id is too big
+		parameters.put("managerId", "922337203685477580700");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());	
 			
-			//5. manager id is too small 
-			managerId = "-922337203685477580700";			
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
+		//set back correct managerId		
+		parameters.put("managerId", "1");
 			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
+		//7. empty firstName			
+		parameters.put("firstName", "");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());		
 			
-			//6. manager id is too big 
-			managerId = "922337203685477580700";			
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
+		//8. to short firstName		
+		parameters.put("firstName", "e");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());
 			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
+		//9. too long firstName		
+		parameters.put("firstName", "rewrrrrrrrrrrrrrrrrrrrrrrreweeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());
 			
-			//set back correct managerId
-			managerId = "3";
+		//10. not only letters in firstName
+		parameters.put("firstName", "4234rwerwe");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());		
 			
-			//7. empty firstName			
-			firstName = "";
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
+		//set correct firstName
+		parameters.put("firstName", "TestFirstName");
 			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
+		//11. empty secondName
+		parameters.put("secondName", "");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());		
+		
+		//12. to short secondName
+		parameters.put("secondName", "r");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());
 			
-			//8. to short firstName
-			firstName = "e";
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-			//9. too long firstName
-			firstName = "rewrrrrrrrrrrrrrrrrrrrrrrreweeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee";
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-			
-			//10. not only letters in firstName
-			firstName = "4234rwerwe";
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-			//set correct firstName
-			firstName = "TestFirstName";
-			
-			//11. empty secondName			
-			secondName = "";
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-			//12. to short secondName
-			secondName = "r";
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-			//13. to long secondName
-			secondName = "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrreeeeeeeeeeeeefffffffffffffffff";
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-			//14. not only letters in secondName
-			secondName = "qeq332";
-			testUrl = String.format(URL_ADD_EMPLOYEE, managerId, firstName, secondName);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("POST");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-		} catch(Exception ee) {						
-			fail();
-		}
+		//13. to long secondName
+		parameters.put("secondName", "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrreeeeeeeeeeeeefffffffffffffffff");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());
+		
+		//14. not only letters in secondName
+		parameters.put("secondName", "qeq332");		
+		assertEquals(500, makePostRequest(URL_ADD_EMPLOYEE, parameters).getResponseCode());		
 	}
 
 	@Test
-	public void deleteEmployeePositiveTest() {
-
-		try {
-			String employeeId = "3";
+	public void deleteEmployeePositiveTest() throws IOException {
+		Map<String, String> parameters = new HashMap<String, String>(1);
+		parameters.put("employeeId", "3");		
+		assertEquals(200, makeDeleteRequest(URL_DELETE_EMPLOYEE, parameters).getResponseCode());		
+	}
+	
+	@Test
+	public void deleteEmployeeNegativeTest() throws IOException {
+		//1. employee id is empty
+		Map<String, String> parameters = new HashMap<String, String>(1);
+		parameters.put("employeeId", "");				
+		assertEquals(500, makeDeleteRequest(URL_DELETE_EMPLOYEE, parameters).getResponseCode());		
+			
+		//2. employee id is negative
+		parameters.put("employeeId", "-1");				
+		assertEquals(500, makeDeleteRequest(URL_DELETE_EMPLOYEE, parameters).getResponseCode());
+		
+		//3. employee id is not a number
+		parameters.put("employeeId", "rwerw");				
+		assertEquals(500, makeDeleteRequest(URL_DELETE_EMPLOYEE, parameters).getResponseCode());
+		
+		//4. employee id is not a integer 
+		parameters.put("employeeId", "20.6");				
+		assertEquals(500, makeDeleteRequest(URL_DELETE_EMPLOYEE, parameters).getResponseCode());		
 					
+		//5. employee id is too small
+		parameters.put("employeeId", "-922337203685477580700");				
+		assertEquals(500, makeDeleteRequest(URL_DELETE_EMPLOYEE, parameters).getResponseCode());		
 			
-			String testUrl = String.format(URL_DELETE_EMPLOYEE, employeeId);			
-			URL serveltUrl = new URL(testUrl);
-			HttpURLConnection con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("GET");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			int responseCode = con.getResponseCode();			
-			assertEquals(200, responseCode);
-		} catch(Exception ee) {						
-			fail();
-		}
+		//6. employee id is too big
+		parameters.put("employeeId", "922337203685477580700");				
+		assertEquals(500, makeDeleteRequest(URL_DELETE_EMPLOYEE, parameters).getResponseCode());		
+		
+		//7. delete ceo 
+		parameters.put("employeeId", "1");				
+		assertEquals(500, makeDeleteRequest(URL_DELETE_EMPLOYEE, parameters).getResponseCode());
 	}
 	
-	@Test
-	public void deleteEmployeeNegativeTest() {
-
+	private HttpURLConnection makeGetRequest(String requestUrl, Map<String, String> parameters) {
+		return makeRequest(requestUrl, parameters, HttpMethod.GET);
+	}
+	
+	private HttpURLConnection makePostRequest(String requestUrl, Map<String, String> parameters) {
+		return makeRequest(requestUrl, parameters, HttpMethod.POST);
+	}
+	
+	private HttpURLConnection makeDeleteRequest(String requestUrl, Map<String, String> parameters) {
+		return makeRequest(requestUrl, parameters, HttpMethod.DELETE);
+	}
+	
+	private HttpURLConnection makeRequest(String requestUrl, Map<String, String> parameterMap, HttpMethod httpMethod) {
+		String parameters = prepareParameters(parameterMap);
+		boolean parametersInBody = (httpMethod == HttpMethod.POST || httpMethod == HttpMethod.PUT); 
+		
+		if (!parametersInBody) {
+			requestUrl = requestUrl + "?" + parameters;
+		}
+		
 		try {
-			
-			//1. employee id is empty
-			String employeeId = "";			
-			String testUrl = String.format(URL_DELETE_EMPLOYEE, employeeId);			
+			String testUrl = requestUrl;			
 			URL serveltUrl = new URL(testUrl);
 			HttpURLConnection con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("DELETE");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
+			con.setRequestMethod(httpMethod.name());
+			con.setUseCaches(false);
 			
-			int responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
+			if (parametersInBody) {
+				con.setDoInput(true);
+				con.setDoOutput(true);
+				try( DataOutputStream wr = new DataOutputStream(con.getOutputStream())) {
+					wr.write(parameters.getBytes());
+				} catch(Exception ee) {
+					return null;
+				}
+			}
 			
-			//2. employee id is negative 
-			employeeId = "-1";			
-			testUrl = String.format(URL_DELETE_EMPLOYEE, employeeId);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("DELETE");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-
-			//3. employee id is not a number 
-			employeeId = "rwerw";			
-			testUrl = String.format(URL_DELETE_EMPLOYEE, employeeId);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("DELETE");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);			
-			
-			//4. employee id is not a integer 
-			employeeId = "20.6";			
-			testUrl = String.format(URL_DELETE_EMPLOYEE, employeeId);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("DELETE");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			//5. employee id is too small 
-			employeeId = "-922337203685477580700";			
-			testUrl = String.format(URL_DELETE_EMPLOYEE, employeeId);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("DELETE");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-			//6. employee id is too big 
-			employeeId = "922337203685477580700";			
-			testUrl = String.format(URL_DELETE_EMPLOYEE, employeeId);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("DELETE");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-			
-			//7. delete ceo 
-			employeeId = "1";			
-			testUrl = String.format(URL_DELETE_EMPLOYEE, employeeId);			
-			serveltUrl = new URL(testUrl);
-			con =  (HttpURLConnection) serveltUrl.openConnection();
-			con.setRequestMethod("DELETE");	
-			con.setDoInput(true);
-			con.setDoOutput(true);
-			
-			responseCode = con.getResponseCode();			
-			assertEquals(500, responseCode);
-		} catch(Exception ee) {						
-			fail();
+			return con;
+		} catch(Exception ee) {	
+			ee.printStackTrace();
+			return null;
 		}
+		
 	}
+	
+	
+	
+	private String prepareParameters(Map<String, String> parameterMap) {
+		if (parameterMap == null || parameterMap.isEmpty()) {
+			return "";
+		}
+		
+		StringBuilder parameters = new StringBuilder();
+		for (String parameterName : parameterMap.keySet()) {
+			if (parameters.length() != 0) {
+				parameters.append("&");
+			}
+			parameters.append(parameterName).append("=").append(parameterMap.get(parameterName));
+		}
+		return parameters.toString();		
+	}	
 }
