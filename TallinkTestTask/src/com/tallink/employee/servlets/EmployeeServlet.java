@@ -32,8 +32,7 @@ public class EmployeeServlet extends HttpServlet {
   
 
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//call service
 		logger.debug("Started handling request 'getAllEmployee'" );
 		IEmployeeService employeeService = ServiceLocator.getEmployeeService();
@@ -58,8 +57,7 @@ public class EmployeeServlet extends HttpServlet {
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		//parse
 		EmployeeRequestBean employeeRequestBean = null;
 		try {
@@ -109,7 +107,7 @@ public class EmployeeServlet extends HttpServlet {
 	
 	
 	@Override
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
 		//parse
 		EmployeeRequestBean employeeRequestBean = null;
 		try {
