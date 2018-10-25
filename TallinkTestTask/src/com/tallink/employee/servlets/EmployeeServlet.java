@@ -38,38 +38,35 @@ public class EmployeeServlet extends HttpServlet {
 		IEmployeeService employeeService = ServiceLocator.getEmployeeService();
 		try {
 			EmployeeResponseBean employeeResponseBean = employeeService.getAllEmployees();
-			JSONResponse successResponse = JSONResponse.getSuccessResponce(employeeResponseBean);
+			JSONResponse successResponse = JSONResponse.getSuccessResponse(employeeResponseBean);
 			ResponseUtil.makeSuccessJSONResponse(response, gson.toJson(successResponse));
 			
 			logger.debug("Finished 'getAllEmployee' request");
 		} catch (EmployeeException ee) {
-			logger.error("Error occured during 'getAllEmployee' request.", ee);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(ee.getErrors());
+			logger.error("Error occurred during 'getAllEmployee' request.", ee);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(ee.getErrors());
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
-			return;
 		} catch (Exception e) {
-			logger.error("Error occured during 'getAllEmployee' request.", e);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(new ErrorBean(Errors.SMTH_WENT_WRONG));
+			logger.error("Error occurred during 'getAllEmployee' request.", e);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(new ErrorBean(Errors.SMTH_WENT_WRONG));
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
-			return;
 		}
-		
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {		
 		//parse
-		EmployeeRequestBean employeeRequestBean = null;
+		EmployeeRequestBean employeeRequestBean;
 		try {
 			employeeRequestBean = RequestParser.parseEmployeeRequest(request);
 		} catch(NumberFormatException nfe) {
-			logger.error("Error occured during 'addEmployee' request.", nfe);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(new ErrorBean(Errors.DATA_FORMAT_WRONG));
+			logger.error("Error occurred during 'addEmployee' request.", nfe);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(new ErrorBean(Errors.DATA_FORMAT_WRONG));
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
 			return;
 		} catch (Exception e) {
-			logger.error("Error occured during 'addEmployee' request.", e);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(new ErrorBean(Errors.SMTH_WENT_WRONG));
+			logger.error("Error occurred during 'addEmployee' request.", e);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(new ErrorBean(Errors.SMTH_WENT_WRONG));
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
 			return;
 		}
@@ -79,7 +76,7 @@ public class EmployeeServlet extends HttpServlet {
 		//validate
 		List<ErrorBean> errorList = ValidationUtil.validateAddEmployeeOperation(employeeRequestBean);
 		if (!errorList.isEmpty()) {
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(errorList);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(errorList);
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
 			logger.debug("Data in request isn't valid: " + employeeRequestBean + ", errors: "+ errorList.toString());
 			return;
@@ -89,19 +86,17 @@ public class EmployeeServlet extends HttpServlet {
 		IEmployeeService employeeService = ServiceLocator.getEmployeeService();
 		try {
 			employeeService.addEmployee(employeeRequestBean);
-			JSONResponse successResponse = JSONResponse.getSuccessResponce();
+			JSONResponse successResponse = JSONResponse.getSuccessResponse();
 			ResponseUtil.makeSuccessJSONResponse(response, gson.toJson(successResponse));
 			logger.debug("Finished handling request 'addEmployee'. Employee: " + employeeRequestBean);
 		} catch (EmployeeException ee) {
-			logger.error("Error occured during hangling request 'addEmployee'. Employee: " + employeeRequestBean, ee);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(ee.getErrors());
+			logger.error("Error occurred during handling request 'addEmployee'. Employee: " + employeeRequestBean, ee);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(ee.getErrors());
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
-			return;
 		} catch (Exception e) {
-			logger.error("Error occured during hangling request 'addEmployee'. Employee: " + employeeRequestBean, e);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(new ErrorBean(Errors.SMTH_WENT_WRONG));
+			logger.error("Error occurred during handling request 'addEmployee'. Employee: " + employeeRequestBean, e);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(new ErrorBean(Errors.SMTH_WENT_WRONG));
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
-			return;
 		}
 	}
 	
@@ -109,17 +104,17 @@ public class EmployeeServlet extends HttpServlet {
 	@Override
 	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {	
 		//parse
-		EmployeeRequestBean employeeRequestBean = null;
+		EmployeeRequestBean employeeRequestBean;
 		try {
 			employeeRequestBean = RequestParser.parseEmployeeRequest(request);
 		} catch(NumberFormatException nfe) {
-			logger.error("Error occured during 'deleteEmployee' request.", nfe);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(new ErrorBean(Errors.DATA_FORMAT_WRONG));
+			logger.error("Error occurred during 'deleteEmployee' request.", nfe);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(new ErrorBean(Errors.DATA_FORMAT_WRONG));
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
 			return;
 		} catch (Exception e) {
-			logger.error("Error occured during 'deleteEmployee' request.", e);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(new ErrorBean(Errors.SMTH_WENT_WRONG));
+			logger.error("Error occurred during 'deleteEmployee' request.", e);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(new ErrorBean(Errors.SMTH_WENT_WRONG));
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
 			return;
 		}
@@ -129,7 +124,7 @@ public class EmployeeServlet extends HttpServlet {
 		//validate
 		List<ErrorBean> errorList = ValidationUtil.validateDeleteEmployeeOperation(employeeRequestBean);
 		if (!errorList.isEmpty()) {
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(errorList);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(errorList);
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
 			logger.debug("Data in request isn't valid: " + employeeRequestBean + ", errors: "+ errorList.toString());
 			return;
@@ -141,15 +136,13 @@ public class EmployeeServlet extends HttpServlet {
 			employeeService.deleteEmployee(employeeRequestBean);
 			logger.debug("Finished handling request 'removeEmployee'. Employee: " + employeeRequestBean);
 		} catch (EmployeeException ee) {
-			logger.error("Error occured during hangling request 'removeEmployee'. Employee: " + employeeRequestBean, ee);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(ee.getErrors());
+			logger.error("Error occurred during handling request 'removeEmployee'. Employee: " + employeeRequestBean, ee);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(ee.getErrors());
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
-			return;
 		} catch (Exception e) {
-			logger.error("Error occured during hangling request 'removeEmployee'. Employee: " + employeeRequestBean, e);
-			JSONResponse errorResponse = JSONResponse.getErrorResponce(new ErrorBean(Errors.SMTH_WENT_WRONG));
+			logger.error("Error occurred during handling request 'removeEmployee'. Employee: " + employeeRequestBean, e);
+			JSONResponse errorResponse = JSONResponse.getErrorResponse(new ErrorBean(Errors.SMTH_WENT_WRONG));
 			ResponseUtil.makeErrorJSONResponse(response, gson.toJson(errorResponse));
-			return;
 		}
 	}
 

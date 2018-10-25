@@ -19,10 +19,8 @@ import com.tallink.employee.services.IEmployeeService;
 
 public class EmployeeServiceImpl implements IEmployeeService {
 	private final static Logger logger = Logger.getLogger(EmployeeServiceImpl.class);
-	private DAOFactory daoFactory;
-	
-	//TODO:loggings
-	
+	private final DAOFactory daoFactory;
+
 	private final static Object editDeleteLock = new Object();
 	
 	
@@ -38,7 +36,7 @@ public class EmployeeServiceImpl implements IEmployeeService {
 			System.out.println(data);
 		}
 		
-		return parseEmployees(employeeList);
+		return makeEmployeeHierarchy(employeeList);
 	}
 
 	@Override
@@ -80,26 +78,27 @@ public class EmployeeServiceImpl implements IEmployeeService {
 		}	
 	}
 	
-	private EmployeeResponseBean parseEmployees(List<EmployeeData> employeeList) {
-		EmployeeResponseBean result = null;
-		
-		Map<Long, EmployeeResponseBean> employeeMap = new HashMap<>();
-		
-		for (EmployeeData data : employeeList) {
+	private EmployeeResponseBean makeEmployeeHierarchy(List<EmployeeData> employeeList) {
+        if (employeeList == null || employeeList.isEmpty()) {
+            return null;
+        }
+
+        // remember ? we sorted it by level, so the first is a manager
+		Map<Long, EmployeeResponseBean> employeeHierarchyMap = new HashMap<>();
+		EmployeeResponseBean manager = new EmployeeResponseBean(employeeList.get(0));
+        employeeHierarchyMap.put(employeeList.get(0).getEmployeeId(), manager);
+
+		// then go other levels and we just add children
+		for (int i = 1; i < employeeList.size(); i++) {
+            EmployeeData data = employeeList.get(i);
 			EmployeeResponseBean responseBean = new EmployeeResponseBean(data);
-			if (employeeMap.isEmpty()) {
-				employeeMap.put(data.getEmployeeId(), responseBean);
-				result = responseBean;
-				continue;
-			} 
-			
-			if (employeeMap.containsKey(data.getManagerId())) {
-				employeeMap.put(data.getEmployeeId(), responseBean);
-				employeeMap.get(data.getManagerId()).addChildren(responseBean);
-			}
-			
+
+            //we always have a managerId, because we sorted it by level
+			employeeHierarchyMap.put(data.getEmployeeId(), responseBean);
+			employeeHierarchyMap.get(data.getManagerId()).addChildren(responseBean);
+
 		}
-		return result;
+		return manager;
 	}
 }
 

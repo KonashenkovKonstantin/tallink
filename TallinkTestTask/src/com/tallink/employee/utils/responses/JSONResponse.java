@@ -23,25 +23,25 @@ public class JSONResponse {
 		
 	}
 	
-	public static JSONResponse getSuccessResponce() {
+	public static JSONResponse getSuccessResponse() {
 		JSONResponse resp = new JSONResponse();
 		resp.meta.isSuccessOperation = true;
 		resp.responseBean = null;
 		return resp;
 	}
 	
-	public static JSONResponse getSuccessResponce(EmployeeResponseBean responseBean) {
+	public static JSONResponse getSuccessResponse(EmployeeResponseBean responseBean) {
 		JSONResponse resp = new JSONResponse();
 		resp.meta.isSuccessOperation = true;
 		resp.responseBean = responseBean;
 		return resp;
 	}
 	
-	public static JSONResponse getErrorResponce(ErrorBean errorBean) {
-		return getErrorResponce(Arrays.asList(errorBean));
+	public static JSONResponse getErrorResponse(ErrorBean errorBean) {
+		return getErrorResponse(Arrays.asList(errorBean));
 	}
 	
-	public static JSONResponse getErrorResponce(List<ErrorBean> errorsList) {
+	public static JSONResponse getErrorResponse(List<ErrorBean> errorsList) {
 		JSONResponse resp = new JSONResponse();
 		resp.meta.isSuccessOperation = false;
 		resp.meta.errors = errorsList;

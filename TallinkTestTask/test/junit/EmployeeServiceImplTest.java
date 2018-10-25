@@ -18,8 +18,8 @@ public class EmployeeServiceImplTest {
 			EmployeeResponseBean allEmployees = ServiceLocator.getEmployeeService().getAllEmployees();
 			//we are 100% sure that there are several employee
 			assertNotEquals(null, allEmployees);
-			assertNotEquals(null, allEmployees.getChildrens());
-			assertNotEquals(0, allEmployees.getChildrens().size());
+			assertNotEquals(null, allEmployees.getChildren());
+			assertNotEquals(0, allEmployees.getChildren().size());
 		} catch(Exception ee) {
 			fail();
 		}
@@ -50,6 +50,7 @@ public class EmployeeServiceImplTest {
 			
 			
 		} catch(Exception ee) {
+            ee.printStackTrace();
 			fail();
 		}
 		
@@ -104,8 +105,8 @@ public class EmployeeServiceImplTest {
 			return employeeResponseBean.getEmployeeId();
 		}
 		
-		if (employeeResponseBean.getChildrens() != null && employeeResponseBean.getChildrens().size() != 0) {
-			for (EmployeeResponseBean bean : employeeResponseBean.getChildrens()) {
+		if (employeeResponseBean.getChildren() != null && employeeResponseBean.getChildren().size() != 0) {
+			for (EmployeeResponseBean bean : employeeResponseBean.getChildren()) {
 				long result = getIdOfCeoEmployee(bean);
 				if (result != -1) {
 					return result;
@@ -120,8 +121,8 @@ public class EmployeeServiceImplTest {
 			return employeeResponseBean.getEmployeeId();
 		}
 		
-		if (employeeResponseBean.getChildrens() != null && employeeResponseBean.getChildrens().size() != 0) {
-			for (EmployeeResponseBean bean : employeeResponseBean.getChildrens()) {
+		if (employeeResponseBean.getChildren() != null && employeeResponseBean.getChildren().size() != 0) {
+			for (EmployeeResponseBean bean : employeeResponseBean.getChildren()) {
 				long result = findAnyNotCeoEmployee(bean);
 				if (result != -1) {
 					return result;
@@ -140,8 +141,8 @@ public class EmployeeServiceImplTest {
 			return true;
 		}
 		
-		if (employeeResponseBean.getChildrens() != null && employeeResponseBean.getChildrens().size() != 0) {
-			for (EmployeeResponseBean bean : employeeResponseBean.getChildrens()) {
+		if (employeeResponseBean.getChildren() != null && employeeResponseBean.getChildren().size() != 0) {
+			for (EmployeeResponseBean bean : employeeResponseBean.getChildren()) {
 				boolean result = containsEmployee(bean, employeeRequestBean);
 				if (result) {
 					return result;
@@ -156,8 +157,8 @@ public class EmployeeServiceImplTest {
 			return true;
 		}
 		
-		if (employeeResponseBean.getChildrens() != null && employeeResponseBean.getChildrens().size() != 0) {
-			for (EmployeeResponseBean bean : employeeResponseBean.getChildrens()) {
+		if (employeeResponseBean.getChildren() != null && employeeResponseBean.getChildren().size() != 0) {
+			for (EmployeeResponseBean bean : employeeResponseBean.getChildren()) {
 				boolean result = containsEmployee(bean, employeeId);
 				if (result) {
 					return result;

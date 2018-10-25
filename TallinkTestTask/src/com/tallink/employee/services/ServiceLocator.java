@@ -15,7 +15,7 @@ public class ServiceLocator {
 				employeeService = new EmployeeServiceImpl();
 				logger.info("Finished service locator initialization");
 			} catch (Exception ee) {
-				logger.error("Error occured during serviceLocator initialization", ee);
+				logger.error("Error occurred during serviceLocator initialization", ee);
 				throw new RuntimeException(ee);
 			}
 			

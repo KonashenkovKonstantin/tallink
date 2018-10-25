@@ -17,7 +17,7 @@ public class EmployeeResponseBean {
 	private String secondName;
 	
 	@SerializedName("nodes")
-	private List<EmployeeResponseBean> childrens =  null;
+	private List<EmployeeResponseBean> children =  null;
 	
 	public EmployeeResponseBean(EmployeeData employeeData) {
 		this.employeeId = employeeData.getEmployeeId();
@@ -29,23 +29,17 @@ public class EmployeeResponseBean {
 	}
 	
 	public void addChildren(EmployeeResponseBean employeeResponseBean) {
-		if (childrens == null) {
-			childrens = new ArrayList<>(); 
+		if (children == null) {
+			children = new ArrayList<>();
 		}
-		childrens.add(employeeResponseBean);
+		children.add(employeeResponseBean);
 	}
-	
-	
-	
-	
 	
 	public String getFirstName() {
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+
 
 	public String getSecondName() {
 		return secondName;
@@ -59,9 +53,7 @@ public class EmployeeResponseBean {
 		return managerId;
 	}
 
-	public void setManagerId(long managerId) {
-		this.managerId = managerId;
-	}
+
 
 	public long getEmployeeId() {
 		return employeeId;
@@ -71,8 +63,8 @@ public class EmployeeResponseBean {
 		this.employeeId = employeeId;
 	}
 
-	public List<EmployeeResponseBean> getChildrens() {
-		return childrens;
+	public List<EmployeeResponseBean> getChildren() {
+		return children;
 	}
 
 	public String getEmployerLabel() {

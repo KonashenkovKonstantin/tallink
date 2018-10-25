@@ -13,14 +13,14 @@ import com.tallink.employee.model.data.EmployeeData;
 
 public class EmployeeDAO implements IEmployeeDAO {
 	
-	public static final String SQL_SELECT_ALL_EMPLOYEES = "Select * from Employee order by level";
-	public static final String SQL_SELECT_EMPLOYEE_BY_ID = "Select * from Employee where employeeId = ?";
-	
-	public static final String SQL_INSERT_NEW_EMPLOYEE = "Insert into Employee (managerId, level, firstName, secondName) values (?, ?, ?, ?)";
-	
-	public static final String SQL_UPDATE_MANAGER_IDS = "Update Employee set managerId = ? where managerId = ?";
-	
-	public static final String SQL_DELETE_EMPLOYEE = "Delete from Employee where employeeId = ?";
+	private static final String SQL_SELECT_ALL_EMPLOYEES = "Select * from Employee order by level";
+    private static final String SQL_SELECT_EMPLOYEE_BY_ID = "Select * from Employee where employeeId = ?";
+
+    private static final String SQL_INSERT_NEW_EMPLOYEE = "Insert into Employee (managerId, level, firstName, secondName) values (?, ?, ?, ?)";
+
+    private static final String SQL_UPDATE_MANAGER_IDS = "Update Employee set managerId = ? where managerId = ?";
+
+    private static final String SQL_DELETE_EMPLOYEE = "Delete from Employee where employeeId = ?";
 	
 
 	@Override
